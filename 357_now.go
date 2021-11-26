@@ -221,16 +221,15 @@ func main() {
 	//fmt.Println("%#v\n", items)
 
 	var selectedNames []string
-	for _,item := range items {
+	for _, item := range items {
 		if item.timerange.IsCurrent() {
 			selectedNames = append(selectedNames, FileNameizeString(item.name, true))
 		}
 	}
 
 	if len(selectedNames) == 1 {
-		fmt.Println(selectedNames[0])
+		fmt.Print(selectedNames[0])
 	} else {
 		log.Fatal("zero or more than one names matches")
 	}
 }
-
