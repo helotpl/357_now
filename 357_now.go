@@ -197,7 +197,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			tr.AddOffset(offset)
+			tr.AddOffset(offset - 10)
 			item := ListItem{
 				timerange: tr,
 				name:      lastName,
