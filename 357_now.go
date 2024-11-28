@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/antchfx/htmlquery"
+	"golang.org/x/net/html"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -162,22 +164,38 @@ type ListItem struct {
 	name      string
 }
 
+func findTodayNum(doc *html.Node) int {
+	dateSlider := htmlquery.FindOne(doc, "//div[@id='scheduleNav']")
+	dates, err := htmlquery.QueryAll(dateSlider, "//div[@class='scheduleDate']")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i, x := range dates {
+		if htmlquery.InnerText(x) == "Dzisiaj" {
+			return i
+		}
+	}
+	return -1
+}
+
 func main() {
 	doc, err := htmlquery.LoadURL("https://radio357.pl/ramowka")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	data := htmlquery.FindOne(doc, "//div[@class='schedule-day schedule-day--today']")
+	todayNum := strconv.Itoa(findTodayNum(doc))
 
-	list, err := htmlquery.QueryAll(data, "//div[@class='schedule-item' or @class='schedule-item schedule-item--live']")
+	data := htmlquery.FindOne(doc, "(//div[@id='scheduleList']//div[contains(@class,'swiper-slide')])["+todayNum+"]")
+
+	list, err := htmlquery.QueryAll(data, "//div[contains(@class,'podcastElement')]")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	t := time.Now()
-	_, offset := t.Zone()
-	offset /= 60
+	//t := time.Now()
+	//_, offset := t.Zone()
+	//offset /= 60
 
 	start := ""
 	lastTime := ""
@@ -186,9 +204,9 @@ func main() {
 	for i, x := range list {
 		//fmt.Println(i)
 		//fmt.Println(htmlquery.OutputHTML(x, true))
-		startTimeNode := htmlquery.FindOne(x, "//span[@class='schedule-item__time']")
+		startTimeNode := htmlquery.FindOne(x, "//span[@class='h2']")
 		startTimeText := strings.TrimSpace(htmlquery.InnerText(startTimeNode))
-		nameNode := htmlquery.FindOne(x, "//div[@class='schedule-item__name']")
+		nameNode := htmlquery.FindOne(x, "//h3[contains(@class,'podcastSubTitle')]")
 		nameText := strings.TrimSpace(htmlquery.InnerText(nameNode))
 		if i == 0 {
 			start = startTimeText
@@ -197,7 +215,8 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			tr.AddOffset(offset - 10)
+			// now times are in CET
+			//tr.AddOffset(offset)
 			item := ListItem{
 				timerange: tr,
 				name:      lastName,
@@ -211,7 +230,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tr.AddOffset(offset - 10)
+	//tr.AddOffset(offset)
 	item := ListItem{
 		timerange: tr,
 		name:      lastName,
