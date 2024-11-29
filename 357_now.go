@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/antchfx/htmlquery"
-	"golang.org/x/net/html"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 )
 
-var replacements map[rune]rune = map[rune]rune{
+var replacements = map[rune]rune{
 	'ą': 'a',
 	'Ą': 'A',
 	'ę': 'e',
@@ -164,29 +162,13 @@ type ListItem struct {
 	name      string
 }
 
-func findTodayNum(doc *html.Node) int {
-	dateSlider := htmlquery.FindOne(doc, "//div[@id='scheduleNav']")
-	dates, err := htmlquery.QueryAll(dateSlider, "//div[@class='scheduleDate']")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for i, x := range dates {
-		if htmlquery.InnerText(x) == "Dzisiaj" {
-			return i
-		}
-	}
-	return -1
-}
-
 func main() {
 	doc, err := htmlquery.LoadURL("https://radio357.pl/ramowka")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	todayNum := strconv.Itoa(findTodayNum(doc))
-
-	data := htmlquery.FindOne(doc, "(//div[@id='scheduleList']//div[contains(@class,'swiper-slide')])["+todayNum+"]")
+	data := htmlquery.FindOne(doc, "(//div[@id='scheduleList']//div[contains(@class,'swiper-slide')])[3]")
 
 	list, err := htmlquery.QueryAll(data, "//div[contains(@class,'podcastElement')]")
 	if err != nil {
@@ -215,8 +197,9 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			// now times are in CET
+			// now website times are in CET
 			//tr.AddOffset(offset)
+			tr.MoveMinsBack(10)
 			item := ListItem{
 				timerange: tr,
 				name:      lastName,
@@ -230,7 +213,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// now website times are in CET
 	//tr.AddOffset(offset)
+	tr.MoveMinsBack(10)
 	item := ListItem{
 		timerange: tr,
 		name:      lastName,
