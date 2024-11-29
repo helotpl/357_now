@@ -78,17 +78,17 @@ func (mt *MyTime) Add(mins int) {
 	mt.minute = minutes % 60
 }
 
-func (a MyTime) Compare(b MyTime) int {
-	if a.hour > b.hour {
+func (mt *MyTime) Compare(b MyTime) int {
+	if mt.hour > b.hour {
 		return 1
 	}
-	if a.hour < b.hour {
+	if mt.hour < b.hour {
 		return -1
 	}
-	if a.minute > b.minute {
+	if mt.minute > b.minute {
 		return 1
 	}
-	if a.minute < b.minute {
+	if mt.minute < b.minute {
 		return -1
 	}
 	return 0
