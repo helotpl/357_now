@@ -27,6 +27,7 @@ var replacements = map[rune]rune{
 	'Ć': 'C',
 	'ń': 'n',
 	'Ń': 'N',
+	'è': 'e',
 }
 
 func UnPlString(s string) string {
@@ -168,7 +169,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	data := htmlquery.FindOne(doc, "(//div[@id='scheduleList']//div[contains(@class,'swiper-slide')])[3]")
+	data := htmlquery.FindOne(doc, "(//div[@id='scheduleList']//div[contains(@class,'swiper-slide')])[4]")
 
 	list, err := htmlquery.QueryAll(data, "//div[contains(@class,'podcastElement')]")
 	if err != nil {
