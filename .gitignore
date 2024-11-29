@@ -1,0 +1,5 @@
+#ignore binary built in src folder
+357_now
+
+*.html
+*.htm
