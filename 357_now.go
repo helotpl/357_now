@@ -56,7 +56,7 @@ func FileNameizeString(s string, removePL bool) string {
 			ret[i] = '_'
 		}
 	}
-	return string(ret)
+	return strings.Trim(string(ret), "_")
 }
 
 type MyTime struct {
